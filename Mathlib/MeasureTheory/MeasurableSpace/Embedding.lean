@@ -384,6 +384,7 @@ def prodComm : α × β ≃ᵐ β × α where
   measurable_invFun := measurable_id.snd.prodMk measurable_id.fst
 
 /-- Products of measurable spaces are associative. -/
+@[simps!]
 def prodAssoc : (α × β) × γ ≃ᵐ α × β × γ where
   toEquiv := .prodAssoc α β γ
   measurable_toFun := measurable_fst.fst.prodMk <| measurable_fst.snd.prodMk measurable_snd
