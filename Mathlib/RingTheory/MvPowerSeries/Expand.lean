@@ -84,9 +84,9 @@ theorem expand_subst {f : σ → MvPowerSeries τ R} (hf : HasSubst f) {φ : MvP
 
 end
 
-/- TODO : In the original file of multi variate polynomial, there are two theorem about rename
-here, but we don't have rename for multi variate power series. And for `eval₂Hom`, `eval₂`
-and `aevel`, the expression does't look good. -/
+/- TODO : In the original file of `MvPolynomial`, there are two theorems about `rename`
+here, but we don't have `rename` for `MvPowerSeries`. And for `eval₂Hom`, `eval₂`
+and `aeval`, the expression doesn't look good. -/
 
 variable (q : ℕ) (hq : q ≠ 0)
 

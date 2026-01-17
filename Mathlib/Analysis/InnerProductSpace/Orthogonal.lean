@@ -15,7 +15,7 @@ public import Mathlib.Topology.Algebra.Module.ClosedSubmodule
 In this file, the `orthogonal` complement of a submodule `K` is defined, and basic API established.
 We make duplicates for `Submodule` and `ClosedSubmodule`.
 Some of the more subtle results about the orthogonal complement are delayed to
-`Analysis.InnerProductSpace.Projection`.
+`Mathlib/Analysis/InnerProductSpace/Projection/`.
 
 See also `BilinForm.orthogonal` for orthogonality with respect to a general bilinear form.
 
