@@ -168,15 +168,15 @@ theorem order_expand (φ : MvPowerSeries σ R) :
       have : p • φ.order = (p • d).degree := by simp [← hd₂]
       rw [this]
       exact order_le <| (coeff_expand_smul p hp φ _) ▸ hd₁
-    · refine MvPowerSeries.le_order fun d hd => by
-        by_cases! h : ∀ i, p ∣ d i
-        · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
-            by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
-          rw [hm, coeff_expand_smul, coeff_of_lt_order]
-          simp only [hm, map_nsmul, smul_eq_mul, Nat.cast_mul, nsmul_eq_mul] at hd
-          exact lt_of_mul_lt_mul_left' hd
-        · obtain ⟨i, hi⟩ := h
-          exact coeff_expand_of_not_dvd p hp φ hi
+    · refine MvPowerSeries.le_order fun d hd => ?_
+      by_cases! h : ∀ i, p ∣ d i
+      · obtain ⟨m, hm⟩ : ∃ m, d = p • m := ⟨Finsupp.equivFunOnFinite.symm fun i => d i / p,
+          by ext i; simp [(Nat.mul_div_cancel' (h i))]⟩
+        rw [hm, coeff_expand_smul, coeff_of_lt_order]
+        simp only [hm, map_nsmul, smul_eq_mul, Nat.cast_mul, nsmul_eq_mul] at hd
+        exact lt_of_mul_lt_mul_left' hd
+      · obtain ⟨i, hi⟩ := h
+        exact coeff_expand_of_not_dvd p hp φ hi
 
 section MvPolynomial
 
