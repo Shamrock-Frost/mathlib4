@@ -364,34 +364,6 @@ instance (R : Type*) [Ring R] [CharZero R] : FaithfulSMul ℤ R := by
 
 end FaithfulSMul
 
-namespace NoZeroSMulDivisors
-
--- see Note [lower instance priority]
-instance (priority := 100) instOfFaithfulSMul {R A : Type*}
-    [CommSemiring R] [Nontrivial R] [Ring A] [Algebra R A] [NoZeroDivisors A] [FaithfulSMul R A] :
-    IsTorsionFree R A where
-  isSMulRegular r hr a b hab := by
-    rw [← sub_eq_zero, ← smul_sub] at hab
-    simpa [Algebra.smul_def, FaithfulSMul.algebraMap_eq_zero_iff, sub_eq_zero, hr.ne_zero] using hab
-
-variable {R A : Type*} [CommRing R] [IsDomain R] [Ring A] [Algebra R A]
-
-instance [Nontrivial A] [IsTorsionFree R A] : FaithfulSMul R A where
-  eq_of_smul_eq_smul {r₁ r₂} h := by
-    specialize h 1
-    rw [← sub_eq_zero, ← sub_smul, smul_eq_zero, sub_eq_zero] at h
-    exact h.resolve_right one_ne_zero
-
-lemma iff_faithfulSMul [IsDomain A] : IsTorsionFree R A ↔ FaithfulSMul R A where
-  mp _ := inferInstance
-  mpr _ := inferInstance
-
-theorem iff_algebraMap_injective [IsDomain A] :
-    IsTorsionFree R A ↔ Injective (algebraMap R A) := by
-  rw [iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
-
-end NoZeroSMulDivisors
-
 section IsScalarTower
 
 variable {R : Type*} [CommSemiring R]
@@ -482,6 +454,12 @@ lemma isTorsionFree_iff_algebraMap_injective [IsDomain A] :
   rw [isTorsionFree_iff_faithfulSMul, faithfulSMul_iff_algebraMap_injective]
 
 end Module
+
+@[deprecated (since := "2026-01-21")]
+alias NoZeroSMulDivisors.iff_algebraMap_injective := isTorsionFree_iff_algebraMap_injective
+
+@[deprecated (since := "2026-01-21")]
+alias NoZeroSMulDivisors.iff_faithfulSMul := isTorsionFree_iff_faithfulSMul
 
 /-! TODO: The following lemmas no longer involve `Algebra` at all, and could be moved closer
 to `Algebra/Module/Submodule.lean`. Currently this is tricky because `ker`, `range`, `⊤`, and `⊥`
