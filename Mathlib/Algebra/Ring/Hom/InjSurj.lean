@@ -17,10 +17,11 @@ public section
 
 open Function
 
-variable {α β : Type*}
+variable {R S : Type*}
 
 /-- Pullback `IsDomain` instance along an injective function. -/
-protected theorem Function.Injective.isDomain [Semiring α] [IsDomain α] [Semiring β] {F}
-    [FunLike F β α] [MonoidWithZeroHomClass F β α] (f : F) (hf : Injective f) : IsDomain β where
-  __ := domain_nontrivial f (map_zero _) (map_one _)
-  __ := hf.isCancelMulZero f (map_zero _) (map_mul _)
+protected theorem Function.Injective.isDomain [Semiring R] [IsDomain R] [Semiring S] (f : S → R)
+    (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) :
+    IsDomain S where
+  __ := domain_nontrivial f zero one
+  __ := hf.isCancelMulZero f zero mul
