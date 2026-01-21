@@ -429,12 +429,12 @@ lemma Module.IsTorsionFree.of_faithfulSMul [Semiring S] [Module S R] [Module S A
   (FaithfulSMul.algebraMap_injective R A).moduleIsTorsionFree _
     (by simp [Algebra.algebraMap_eq_smul_one])
 
-lemma Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsDomain A] [AddCommMonoid M]
+lemma Module.IsTorsionFree.trans_faithfulSMul [Nontrivial R] [IsCancelMulZero A] [AddCommMonoid M]
     [Module A M] [Module R M] [IsTorsionFree A M] [IsScalarTower R A M] : IsTorsionFree R M :=
-  .comap (algebraMap R A) (fun r hr ↦ by simpa [isRegular_iff_ne_zero] using hr.ne_zero) (by simp)
+  .comap (algebraMap R A) (fun r hr ↦ .of_ne_zero <| by simpa using hr.ne_zero) (by simp)
 
 -- see Note [lower instance priority]
-instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsDomain A] :
+instance (priority := 100) FaithfulSMul.to_isTorsionFree [Nontrivial R] [IsCancelMulZero A] :
     IsTorsionFree R A := .trans_faithfulSMul R A A
 
 end FaithfulSMul
