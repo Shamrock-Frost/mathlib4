@@ -9,38 +9,27 @@ public import Mathlib.Algebra.MvPolynomial.Module.AEval
 public import Mathlib.Algebra.MvPolynomial.Monad
 
 /-!
-# Multivariate polynomial modules
+# Multivariate polynomial module
 
-In this file we define the multivariate polynomial module of an `R`-module `M`, with variables
-indexed by an arbitrary (possibly infinite) type `σ`. Mathematically this is the module
-$M[X_i : i ∈ σ]$ over $R[X_i : i ∈ σ]$.
-
-This is the multivariate analogue of `PolynomialModule`; see the docstring there for why this is
-a separate type rather than `MvPolynomial σ M` or `(σ →₀ ℕ) →₀ M`.
-
-## Main definitions
-
-* `MvPolynomialModule σ R M`: the `MvPolynomial σ R`-module `M[X_i : i ∈ σ]`.
-* `MvPolynomialModule.single R a m`: the monomial `m X^a`.
-* `MvPolynomialModule.equivPolynomialSelf`: `MvPolynomialModule σ R R ≃ MvPolynomial σ R`
-  as `MvPolynomial σ R`-modules.
-* `MvPolynomialModule.map`: the map `M[X] → M'[X]` induced by a linear map `M → M'`.
-* `MvPolynomialModule.eval`: evaluation at a point `T : σ → R`.
-* `MvPolynomialModule.comp`: substitution of polynomials `P : σ → MvPolynomial τ R` for the
-  variables.
+In this file, we define the multivariate polynomial module for an `R`-module `M`
+with variables indexed by an arbitrary (possibly infinite) type `σ`.
+Mathematically this is the module $M[X_i : i \in σ]$ over $R[X_i : i \in σ]$.
+See the docstring of `PolynomialModule` for details on why we want to keep this
+type separate from `MvPolynomial`.
 -/
 
 @[expose] public noncomputable section
 
 open MvPolynomial
 
-/-- The `MvPolynomial σ R`-module `M[X_i : i ∈ σ]` for an `R`-module `M`.
-This is isomorphic (as an `R`-module) to `MvPolynomial σ M` when `M` is a ring.
+/-- The module of multivariate polynomials with coefficients in an `R`-module
+`M` over the multivariate polynomial ring of `R`.
 
-We require all the module instances `Module S (MvPolynomialModule σ R M)` to factor through `R`
-except `Module (MvPolynomial σ R) (MvPolynomialModule σ R M)`.
-This is also the reason why `R` is included in the alias, or else there would be two different
-instances of `Module (MvPolynomial σ R) (MvPolynomialModule σ (MvPolynomial σ R))`. -/
+We require all the module instances `Module S (MvPolynomialModule σ R M)` to factor
+through `R` except `Module (MvPolynomial σ R) (MvPolynomialModule σ R M)`.
+This is also the reason why `R` is included in the alias, or else there will be two
+different instances of `Module (MvPolynomial σ R) (MvPolynomialModule σ (MvPolynomial σ R))`.
+-/
 @[nolint unusedArguments]
 structure MvPolynomialModule (σ R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] where
   /-- Construct an element of `M[X_i : i ∈ σ]` from its coefficients `(σ →₀ ℕ) →₀ M`. -/
@@ -131,7 +120,7 @@ lemma ofCoeff_sum (s : Finset ι) (f : ι → (σ →₀ ℕ) →₀ M) :
     ofCoeff R (∑ i ∈ s, f i) = ∑ i ∈ s, ofCoeff R (f i) := map_sum coeffAddEquiv.symm ..
 
 variable (R) in
-/-- `single R a m` is the monomial `m X^a`. -/
+/-- The monomial `m * x ^ a`, where `a` is a multi-index. -/
 def single (a : σ →₀ ℕ) (m : M) : MvPolynomialModule σ R M := .ofCoeff R <| .single a m
 
 @[simp] lemma coeff_single (a : σ →₀ ℕ) (m : M) : (single R a m).coeff = .single a m := rfl
@@ -333,6 +322,7 @@ lemma equivPolynomial_symm_monomial {S : Type*} [CommSemiring S] [Algebra R S]
 variable (R' : Type*) {M' : Type*} [CommSemiring R'] [AddCommMonoid M'] [Module R' M']
 variable [Module R M']
 
+-- This should probably be bilinear in `f`
 /-- The image of a polynomial under a linear map. -/
 def map (f : M →ₗ[R] M') : MvPolynomialModule σ R M →ₗ[R] MvPolynomialModule σ R' M' :=
   (coeffLinearEquiv ..).symm.toLinearMap ∘ₗ (Finsupp.mapRange.linearMap f) ∘ₗ
@@ -355,7 +345,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : MvPolynomial σ R) (q : MvPolynomialM
     | monomial => rw [monomial_smul_single, map_single, MvPolynomial.map_monomial, map_single,
         monomial_smul_single, f.map_smul, algebraMap_smul]
 
-/-- Evaluate `p : MvPolynomialModule σ R M` at a point `T : σ → R`. -/
+/-- Evaluate a polynomial `p : MvPolynomialModule σ R M` at `T : σ → R`. -/
 @[simps! -isSimp]
 def eval (T : σ → R) : MvPolynomialModule σ R M →ₗ[R] M where
   toFun p := p.coeff.sum fun a m ↦ (a.prod fun i e ↦ T i ^ e) • m
@@ -400,8 +390,9 @@ theorem eval_map' (f : M →ₗ[R] M) (q : MvPolynomialModule σ R M) (T : σ �
     eval T (map R f q) = f (eval T q) :=
   eval_map R f q T
 
-/-- `comp P q` substitutes the family `P : σ → MvPolynomial τ R` for the variables of
-`q : MvPolynomialModule σ R M`, i.e. it is `q(X i ↦ P i)`. See `MvPolynomial.bind₁`. -/
+/-- `comp P q` is the plethystic action of a family
+`P (i : σ) : MvPolynomial τ R` on `q : MvPolynomialModule σ R M` as `q(X i ↦ P i)`.
+See `MvPolynomial.bind₁` -/
 @[simps!]
 def comp (P : σ → MvPolynomial τ R) :
     MvPolynomialModule σ R M →ₗ[R] MvPolynomialModule τ R M :=
