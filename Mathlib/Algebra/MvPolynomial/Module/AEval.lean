@@ -165,7 +165,10 @@ noncomputable def mapSubmodule :
       show of R M T (T i • m) ∈ q from X_smul_of (R := R) T i m ▸ q.smul_mem _ hm⟩
   left_inv p := by ext; simp
   right_inv q := by ext; aesop
-  map_rel_iff' {p p'} := ⟨fun h x hx ↦ by aesop (rule_sets := [SetLike!]), fun h x hx ↦ by aesop⟩
+  map_rel_iff' {p p'} := ⟨fun h x hx ↦ by
+      obtain ⟨y, hy, hyx⟩ := h ⟨x, hx, rfl⟩
+      rwa [(of R M T).injective hyx] at hy,
+    fun h x hx ↦ by aesop⟩
 
 @[simp] lemma mem_mapSubmodule_apply {p : invtSubmodule R M T} {m : MvAEval R M T} :
     m ∈ mapSubmodule R M T p ↔ (of R M T).symm m ∈ (p : Submodule R M) :=
